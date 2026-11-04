@@ -1,0 +1,64 @@
+name: Publish Nour Wael Portfolio
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Import verified portfolio files once
+        if: hashFiles('site/index.html') == ''
+        shell: bash
+        run: |
+          python3 - <<'PYTHON'
+          from pathlib import Path
+          import hashlib, json, re, urllib.request
+          origin = "https://nour-wael.trend50750.chatgpt.site"
+          new_origin = "https://nour50750.github.io/nour-wael"
+          manifest = {'404.html': '2df7d3fa0bcc17499c17644f439ca44710bc6fd2080be0d2fec5a1a41b5d374a', 'app.js': '0185b946a6122882939963a0d5dc6e44057bcf43c216612521dfd3b9ffd608f4', 'assets/Cairo.ttf': '667c987182391c91f4e57a2f455b1794fb5e3ee6ca4ef3383e86bb690fa9c964', 'assets/Nour_Wael_CV_AR.pdf': 'f5e8ada2eed5f8e3f8c4e0040eb697af3167e74b14b6ec6a3508f3f13fd5c6be', 'assets/Nour_Wael_CV_EN.pdf': '4c8513f84f623aa4c6270dfeef5da165de16eab2799c54f4651d27ed48468035', 'assets/abojabaa.webp': 'd46fd8d0066cabacfc8de33962af68c014c2927d78ee8a38cfa0a7262a8a09d8', 'assets/codekly-cover.webp': '180d7a586505ea800829ad085f0412d74b19f906eaf577555ec53733d8f192b6', 'assets/codekly-full.webp': 'd11af04b9e031d8d365e594fec85e894bb03887db0d7c8184889b981e3bb1cda', 'assets/codekly-identity.pdf': '5f6f50a80ab3f7f35377b4410cdb5215c288edf6b4343ac311ec403475f9b563', 'assets/codekly-social.webp': '0fe90323a519ea8ed401aa9f24e3cd1a05de7c7aa1946b7f3b68efeffc888904', 'assets/companies/arhb.webp': '9e96d6a92904cb1488c6216eb6fd7042b5f852fead4a69f3b27fb5b4823a6e29', 'assets/companies/fkretk.webp': '3e559b913cac3ab6966d41941e08f008013b4dddc7c6b6f1943afd03f79daafb', 'assets/companies/fouh.webp': '92e08999aac96007c83413ee2618be06d845188198be02d365f78d3e49dc0be1', 'assets/companies/jabaliyah.webp': '0b51314e61d6d1c02deedf2aec3442a7b9876ed75032336961a840ccbbe4d88a', 'assets/companies/mango-jazan.webp': 'ea31f021fbd10ee5a3e9d08ac0f357a3fed59ff9a2355f47aacc1b7e6c80d540', 'assets/companies/medical-sleep.webp': 'f28b6cf0dcbd7f86c6037165c80031ba201c7d8a2792b8d0483c63d25d419f95', 'assets/companies/moharb.webp': 'af1db684842fe91bfd4c037eaf383302d6d1d2db71caa224efb9d703cea43efc', 'assets/companies/prestige.webp': 'b0f57be97f5563c22412f17dcd10618b76453b2b76f64cb07d75d09288bb6bcf', 'assets/companies/sabaya.webp': '444ff239a3fd80c46d8863cb46bbf7cbdc1250179bb4f41f9a852e7d3d847fe9', 'assets/companies/tholathiyat.webp': 'fe9caad0586830a2d46448543f56839ea774500caa3ca85da9d16153d1a9f275', 'assets/favicon.svg': '1c28c71631ec5e49e6ae3b135dda5a76fa46343d7507adbd1ec7e4d5f6008f06', 'assets/mammoth.webp': '5479fb6ab168116af4f209fed31bed5080d21c31db3ce905997ed3be7e2130ff', 'assets/nour-wael.png': '37a83e66b911c8553c44a551c65688d6b25cc6d10e0619954d6e9d05b82abd94', 'assets/reemas-cover.webp': 'ef881a7ef257df8c44386e66447272b4323355680d47e15bac66f33e2c42e064', 'assets/reemas-full.webp': 'b0f578f552c182f13b64a05ada805ecfa63b516a3a8636fa8d13916e10376ab0', 'assets/salma-cover.webp': 'e62e90ece31d48bc52998ede73a81f50f53e7c5a1e0a9e06fa9622fd81dfd8bb', 'assets/salma-full.webp': '6d120759488f9e9a62767de6c4bf37237ada24dc5105f9571e61dc92319189e0', 'en/index.html': '18ae2c45861788fa44f6736dbb5b1b33a9a58b89fb659e73209d0f649db0b4b1', 'index.html': '1e932408b76a9c651d27bf26677704d33c5f8acc755d01508b22075f6509a0ee', 'robots.txt': '2f1a1fbcb7a02fc5486702dd98c4a4604d4e9750709f7ac8316c8303f70343c5', 'style.css': '0475190097480d3561d90d6d8dc73733ae1082c01189ba7851ab779f5ac2822b'}
+          for name, digest in manifest.items():
+              request = urllib.request.Request(origin + "/" + name, headers={"User-Agent": "NourPortfolioMigration/1.0"})
+              with urllib.request.urlopen(request, timeout=90) as response:
+                  data = response.read()
+              assert hashlib.sha256(data).hexdigest() == digest, "Source changed: " + name
+              output = Path("site") / name
+              output.parent.mkdir(parents=True, exist_ok=True)
+              if name.endswith((".html", ".css", ".js", ".txt")):
+                  text = data.decode("utf-8")
+                  text = text.replace(origin, new_origin)
+                  if name.endswith(".html"):
+                      text = re.sub(r'(src|href)="/(?!/)', lambda m: m.group(1) + '="/nour-wael/', text)
+                  if name.endswith(".css"):
+                      text = text.replace("url('/assets/", "url('./assets/")
+                  data = text.encode("utf-8")
+              output.write_bytes(data)
+          Path("site/.nojekyll").touch()
+          Path("site/sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>'+new_origin+'/</loc></url><url><loc>'+new_origin+'/en/</loc></url></urlset>')
+          print("Imported and verified", len(manifest), "files")
+          PYTHON
+          git config user.name "Nour Wael"
+          git config user.email "43108091+nour50750@users.noreply.github.com"
+          git add site
+          git commit -m "Add complete bilingual portfolio and CV assets"
+          git push origin HEAD:main
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload portfolio
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Publish website
+        id: deployment
+        uses: actions/deploy-pages@v4
