@@ -18,12 +18,16 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
+      - name: Verify and unpack complete portfolio
+        run: |
+          echo "77e028e46ece37494d8f2d25f41eedbd1d733926088ea3fc23ad57fa9bf311a5  nour-library-release.zip" | sha256sum --check
+          unzip -q -o nour-library-release.zip -d release
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload portfolio
         uses: actions/upload-pages-artifact@v4
         with:
-          path: site
+          path: release/site
       - name: Publish website
         id: deployment
         uses: actions/deploy-pages@v4
