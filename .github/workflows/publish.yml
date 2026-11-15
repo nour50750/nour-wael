@@ -21,9 +21,9 @@ jobs:
       - name: Verify and unpack complete portfolio
         run: |
           echo "2c7b9d0f50224bde0344c5e8fa91099861852601780c5ea7c7db5f9aab7b1988  nour-portfolio-layout.zip" | sha256sum --check
-          echo "7771855b206b8ca42a513a8db492d151902deeb6b704f0d37b7d2745a6884d17  nour-gallery-collection-03.zip" | sha256sum --check
+          echo "ca7a1bd1462e3ae7ca36d237394758a3011eee260541bf204cbda3bfe40494a5  nour-gallery-figma20.zip" | sha256sum --check
           unzip -q -o nour-portfolio-layout.zip -d release
-          unzip -q -o nour-gallery-collection-03.zip -d release
+          unzip -q -o nour-gallery-figma20.zip -d release
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload portfolio
