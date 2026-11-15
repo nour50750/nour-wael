@@ -20,8 +20,8 @@ jobs:
       - uses: actions/checkout@v6
       - name: Verify and unpack complete portfolio
         run: |
-          echo "77e028e46ece37494d8f2d25f41eedbd1d733926088ea3fc23ad57fa9bf311a5  nour-library-release.zip" | sha256sum --check
-          unzip -q -o nour-library-release.zip -d release
+          echo "29ac7d2224fc6cd9fcc000d064118972a98fbe3741c0b788f2826e91d5f4a701  nour-portfolio-nov15.zip" | sha256sum --check
+          unzip -q -o nour-portfolio-nov15.zip -d release
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload portfolio
