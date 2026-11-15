@@ -22,8 +22,10 @@ jobs:
         run: |
           echo "2c7b9d0f50224bde0344c5e8fa91099861852601780c5ea7c7db5f9aab7b1988  nour-portfolio-layout.zip" | sha256sum --check
           echo "ca7a1bd1462e3ae7ca36d237394758a3011eee260541bf204cbda3bfe40494a5  nour-gallery-figma20.zip" | sha256sum --check
+          echo "21c846141dca7f768aa0ddd371d0f3618bec7ce641cffe2be2c34648e2c336c1  nour-gallery-figma104.zip" | sha256sum --check
           unzip -q -o nour-portfolio-layout.zip -d release
           unzip -q -o nour-gallery-figma20.zip -d release
+          unzip -q -o nour-gallery-figma104.zip -d release
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload portfolio
